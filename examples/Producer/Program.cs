@@ -22,6 +22,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 
 namespace Confluent.Kafka.Examples.ProducerExample
@@ -49,6 +50,8 @@ namespace Confluent.Kafka.Examples.ProducerExample
                 SaslMechanism = SaslMechanism.ScramSha512,
                 SecurityProtocol = SecurityProtocol.SaslSsl
             };
+            
+            Console.WriteLine($"Config: {JsonConvert.SerializeObject(config)}");
 
             using (var producer = new ProducerBuilder<string, string>(config).Build())
             {

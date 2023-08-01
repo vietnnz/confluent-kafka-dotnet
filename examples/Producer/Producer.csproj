@@ -12,5 +12,9 @@
     <!-- nuget package reference: <PackageReference Include="Confluent.Kafka" Version="2.2.0" /> -->
     <ProjectReference Include="../../src/Confluent.Kafka/Confluent.Kafka.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
   
 </Project>
