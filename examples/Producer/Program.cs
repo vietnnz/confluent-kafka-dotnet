@@ -30,7 +30,7 @@ namespace Confluent.Kafka.Examples.ProducerExample
     {
         public static async Task Main(string[] args)
         {
-            if (args.Length != 2)
+            if (args.Length != 4)
             {
                 Console.WriteLine("Usage: .. brokerList topicName");
                 return;
@@ -38,8 +38,17 @@ namespace Confluent.Kafka.Examples.ProducerExample
 
             string brokerList = args[0];
             string topicName = args[1];
+            string username = args[2];
+            string password = args[3];
 
-            var config = new ProducerConfig { BootstrapServers = brokerList };
+            var config = new ProducerConfig
+            {
+                BootstrapServers = brokerList,
+                SaslUsername = username,
+                SaslPassword = password,
+                SaslMechanism = SaslMechanism.ScramSha512,
+                SecurityProtocol = SecurityProtocol.SaslSsl
+            };
 
             using (var producer = new ProducerBuilder<string, string>(config).Build())
             {
