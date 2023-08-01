@@ -34,7 +34,7 @@ namespace Confluent.Kafka.Examples.ConsumerExample
         ///         - offsets are automatically committed.
         ///         - no extra thread is created for the Poll (Consume) loop.
         /// </summary>
-        public static void Run_Consume(string brokerList, List<string> topics, CancellationToken cancellationToken)
+        public static void Run_Consume(string brokerList, List<string> topics, string username, string password, CancellationToken cancellationToken)
         {
             var config = new ConsumerConfig
             {
@@ -48,7 +48,11 @@ namespace Confluent.Kafka.Examples.ConsumerExample
                 EnablePartitionEof = true,
                 // A good introduction to the CooperativeSticky assignor and incremental rebalancing:
                 // https://www.confluent.io/blog/cooperative-rebalancing-in-kafka-streams-consumer-ksqldb/
-                PartitionAssignmentStrategy = PartitionAssignmentStrategy.CooperativeSticky
+                PartitionAssignmentStrategy = PartitionAssignmentStrategy.CooperativeSticky,
+                SaslUsername = username,
+                SaslPassword = password,
+                SaslMechanism = SaslMechanism.ScramSha512,
+                SecurityProtocol = SecurityProtocol.SaslSsl,
             };
 
             // Note: If a key or value deserializer is not set (as is the case below), the 
@@ -147,7 +151,7 @@ namespace Confluent.Kafka.Examples.ConsumerExample
         ///         - the consumer is manually assigned to a partition and always starts consumption
         ///           from a specific offset (0).
         /// </summary>
-        public static void Run_ManualAssign(string brokerList, List<string> topics, CancellationToken cancellationToken)
+        public static void Run_ManualAssign(string brokerList, List<string> topics, string username, string password, CancellationToken cancellationToken)
         {
             var config = new ConsumerConfig
             {
@@ -158,7 +162,11 @@ namespace Confluent.Kafka.Examples.ConsumerExample
                 // partition offsets can be committed to a group even by consumers not
                 // subscribed to the group. in this example, auto commit is disabled
                 // to prevent this from occurring.
-                EnableAutoCommit = false
+                EnableAutoCommit = false,
+                SaslUsername = username,
+                SaslPassword = password,
+                SaslMechanism = SaslMechanism.ScramSha512,
+                SecurityProtocol = SecurityProtocol.SaslSsl,
             };
 
             using (var consumer =
@@ -207,7 +215,9 @@ namespace Confluent.Kafka.Examples.ConsumerExample
 
             var mode = args[0];
             var brokerList = args[1];
-            var topics = args.Skip(2).ToList();
+            var username = args[2];
+            var password = args[3];
+            var topics = args.Skip(4).ToList();
 
             Console.WriteLine($"Started consumer, Ctrl-C to stop consuming");
 
@@ -220,10 +230,10 @@ namespace Confluent.Kafka.Examples.ConsumerExample
             switch (mode)
             {
                 case "subscribe":
-                    Run_Consume(brokerList, topics, cts.Token);
+                    Run_Consume(brokerList, topics, username, password, cts.Token);
                     break;
                 case "manual":
-                    Run_ManualAssign(brokerList, topics, cts.Token);
+                    Run_ManualAssign(brokerList, topics, username, password, cts.Token);
                     break;
                 default:
                     PrintUsage();
